@@ -13,9 +13,9 @@ var cors = require('cors');
 var querystring = require('querystring');
 var cookieParser = require('cookie-parser');
 
-var client_id = 'CLIENT_ID'; // Your client id
-var client_secret = 'CLIENT_SECRET'; // Your secret
-var redirect_uri = 'REDIRECT_URI'; // Your redirect uri
+var client_id = 'f4e6f8c0950e4f4b8b67b157063cfc25'; // Your client id
+var client_secret = '20c54f096f0f4c9695a2c3a8941186a2'; // Your secret
+var redirect_uri = 'http://localhost:8888/callback'; // Your redirect uri
 
 /**
  * Generates a random string containing numbers and letters
@@ -46,11 +46,14 @@ app.get('/login', function(req, res) {
   res.cookie(stateKey, state);
 
   // your application requests authorization
-  var scope = 'user-read-private user-read-email';
+  var scope = 'user-read-private user-read-email user-read-playback-state' +
+  'user-top-read playlist-read-collaborative playlist-read-private streaming' +
+  'user-library-read + user-library-modify + user-modify-playback-state';
   res.redirect('https://accounts.spotify.com/authorize?' +
     querystring.stringify({
       response_type: 'code',
       client_id: client_id,
+      show_dialog: true,
       scope: scope,
       redirect_uri: redirect_uri,
       state: state
@@ -104,16 +107,16 @@ app.get('/callback', function(req, res) {
         });
 
         // we can also pass the token to the browser to make requests from there
-        res.redirect('/#' +
-          querystring.stringify({
-            access_token: access_token,
-            refresh_token: refresh_token
-          }));
+        res.redirect('http://localhost:3000/#' +
+  querystring.stringify({
+    access_token: access_token,
+    refresh_token: refresh_token
+}));
       } else {
         res.redirect('/#' +
-          querystring.stringify({
-            error: 'invalid_token'
-          }));
+        querystring.stringify({
+          error: 'invalid_token'
+}));
       }
     });
   }
